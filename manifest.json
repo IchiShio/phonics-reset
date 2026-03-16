@@ -1,0 +1,19 @@
+{
+  "name": "Phonics Reset: Adult Edition",
+  "short_name": "Phonics Reset",
+  "description": "大人のためのやり直し英語発音",
+  "start_url": "/phonics-reset/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230a0a0f'/><circle cx='256' cy='256' r='160' fill='none' stroke='%236c5ce7' stroke-width='12' opacity='0.3'/><circle cx='256' cy='256' r='110' fill='none' stroke='%236c5ce7' stroke-width='12' opacity='0.5'/><circle cx='256' cy='256' r='60' fill='%236c5ce7'/><path d='M230 200 L230 312 L310 256 Z' fill='white'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
