@@ -1,5 +1,5 @@
 /* =============================================
-   PHONICS RESET – Sound Visual App
+   PHONICS RESET – Light Green Theme App
    ============================================= */
 
 // ── Globals ──
@@ -14,7 +14,7 @@ let state = {};         // persisted progress
 let currentScreen = 'title';
 let selectedWorldIdx = null;
 let selectedStageIdx = null;
-let lessonState = null; // { qIdx, hearts, correct, total, worldIdx, stageIdx }
+let lessonState = null; // { qIdx, hearts, correct, total, worldIdx, stageIdx, showingIntro }
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,7 +78,7 @@ function addXP(amount) {
 }
 function updateStatsUI() {
   const el = (id) => document.getElementById(id);
-  if (el('stats-streak')) el('stats-streak').textContent = '🔥 ' + state.streak.count;
+  if (el('stats-streak')) el('stats-streak').textContent = '\uD83D\uDD25 ' + state.streak.count;
   if (el('stats-level'))  el('stats-level').textContent  = 'Lv.' + state.level;
   if (el('stats-xp'))     el('stats-xp').textContent     = state.xp + ' XP';
 }
@@ -167,11 +167,11 @@ function bindEvents() {
 }
 
 /* ═══════════════════════════════════════════════
-   BACKGROUND CANVAS – PARTICLES
+   BACKGROUND CANVAS – PARTICLES (light green dots)
    ═══════════════════════════════════════════════ */
 let bgCtx, bgW, bgH;
 const particles = [];
-const PARTICLE_COUNT = 80;
+const PARTICLE_COUNT = 60;
 
 function initBgCanvas() {
   const c = document.getElementById('bgCanvas');
@@ -187,10 +187,10 @@ function initBgCanvas() {
     particles.push({
       x: Math.random() * bgW,
       y: Math.random() * bgH,
-      r: Math.random() * 1.5 + 0.3,
-      dx: (Math.random() - 0.5) * 0.15,
-      dy: (Math.random() - 0.5) * 0.15,
-      a: Math.random() * 0.5 + 0.1,
+      r: Math.random() * 2 + 0.5,
+      dx: (Math.random() - 0.5) * 0.12,
+      dy: (Math.random() - 0.5) * 0.12,
+      a: Math.random() * 0.15 + 0.05,
     });
   }
   animBg();
@@ -204,14 +204,14 @@ function animBg() {
     if (p.y < 0) p.y = bgH; if (p.y > bgH) p.y = 0;
     bgCtx.beginPath();
     bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    bgCtx.fillStyle = `rgba(0,212,255,${p.a})`;
+    bgCtx.fillStyle = `rgba(34,197,94,${p.a})`;
     bgCtx.fill();
   }
   requestAnimationFrame(animBg);
 }
 
 /* ═══════════════════════════════════════════════
-   TITLE WAVE CANVAS
+   TITLE WAVE CANVAS (green waves)
    ═══════════════════════════════════════════════ */
 let titleCtx, titleRAF;
 function initTitleWave() {
@@ -221,7 +221,8 @@ function initTitleWave() {
   function draw() {
     const w = c.width, h = c.height;
     titleCtx.clearRect(0, 0, w, h);
-    titleCtx.strokeStyle = 'rgba(0,212,255,0.6)';
+    // Primary green wave
+    titleCtx.strokeStyle = 'rgba(34,197,94,0.5)';
     titleCtx.lineWidth = 2;
     titleCtx.beginPath();
     for (let x = 0; x < w; x++) {
@@ -229,8 +230,8 @@ function initTitleWave() {
       x === 0 ? titleCtx.moveTo(x, y) : titleCtx.lineTo(x, y);
     }
     titleCtx.stroke();
-    // second wave (purple)
-    titleCtx.strokeStyle = 'rgba(139,92,246,0.35)';
+    // Secondary darker green wave
+    titleCtx.strokeStyle = 'rgba(5,150,105,0.3)';
     titleCtx.beginPath();
     for (let x = 0; x < w; x++) {
       const y = h / 2 + Math.sin((x / w) * 3 * Math.PI + t * 1.3) * 12;
@@ -247,7 +248,7 @@ function initTitleWave() {
    WORLD MAP
    ═══════════════════════════════════════════════ */
 let mapCtx, mapW, mapH, mapT = 0, mapRAF;
-const worldHitAreas = []; // [{cx,cy,r,idx}]
+const worldHitAreas = [];
 
 function drawMap() {
   const c = document.getElementById('mapCanvas');
@@ -261,11 +262,14 @@ function drawMap() {
 }
 
 function animMap() {
-  mapCtx.clearRect(0, 0, mapW, mapH);
+  // Light green-white background
+  mapCtx.fillStyle = '#e8f5e8';
+  mapCtx.fillRect(0, 0, mapW, mapH);
+
   const nodeR = Math.min(mapW, mapH) * 0.045;
 
   // Determine unlocked worlds
-  const unlocked = new Set([0]); // world 0 always unlocked
+  const unlocked = new Set([0]);
   for (let i = 0; i < WORLDS.length - 1; i++) {
     const w = WORLDS[i];
     if (w.stages.length === 0) continue;
@@ -280,10 +284,9 @@ function animMap() {
     const bx = b.x * mapW, by = b.y * mapH;
     const active = unlocked.has(i) && unlocked.has(i + 1);
 
-    mapCtx.strokeStyle = active ? 'rgba(0,212,255,0.25)' : 'rgba(255,255,255,0.06)';
+    mapCtx.strokeStyle = active ? 'rgba(34,197,94,0.3)' : 'rgba(209,213,219,0.4)';
     mapCtx.lineWidth = 2;
     mapCtx.beginPath();
-    // wavy path
     const steps = 40;
     for (let s = 0; s <= steps; s++) {
       const t2 = s / steps;
@@ -306,33 +309,29 @@ function animMap() {
     const active = unlocked.has(i);
     const r = nodeR;
 
-    // Glow
-    if (active) {
-      const grad = mapCtx.createRadialGradient(cx, cy, r * 0.2, cx, cy, r * 3);
-      grad.addColorStop(0, w.glow);
-      grad.addColorStop(1, 'transparent');
-      mapCtx.fillStyle = grad;
-      mapCtx.fillRect(cx - r * 3, cy - r * 3, r * 6, r * 6);
-    }
-
-    // Orb
-    const pulse = active ? 1 + Math.sin(mapT * 2 + i) * 0.12 : 1;
-    mapCtx.beginPath();
-    mapCtx.arc(cx, cy, r * pulse, 0, Math.PI * 2);
-    mapCtx.fillStyle = active ? w.color : 'rgba(255,255,255,0.1)';
-    mapCtx.fill();
-
+    // Soft shadow
     if (active) {
       mapCtx.shadowColor = w.color;
-      mapCtx.shadowBlur = 20;
+      mapCtx.shadowBlur = 12;
+    }
+
+    // Solid circle
+    mapCtx.beginPath();
+    mapCtx.arc(cx, cy, r, 0, Math.PI * 2);
+    mapCtx.fillStyle = active ? w.color : '#d1d5db';
+    mapCtx.fill();
+    mapCtx.shadowBlur = 0;
+
+    // White inner highlight
+    if (active) {
       mapCtx.beginPath();
-      mapCtx.arc(cx, cy, r * pulse, 0, Math.PI * 2);
+      mapCtx.arc(cx - r * 0.2, cy - r * 0.2, r * 0.35, 0, Math.PI * 2);
+      mapCtx.fillStyle = 'rgba(255,255,255,0.3)';
       mapCtx.fill();
-      mapCtx.shadowBlur = 0;
     }
 
     // Label
-    mapCtx.fillStyle = active ? '#fff' : 'rgba(255,255,255,0.25)';
+    mapCtx.fillStyle = active ? '#1a2e1a' : '#9ca3af';
     mapCtx.font = '600 13px Inter, sans-serif';
     mapCtx.textAlign = 'center';
     mapCtx.fillText(w.name, cx, cy + r + 20);
@@ -357,14 +356,13 @@ function onMapTap(e) {
       document.getElementById('world-info-sub').textContent = w.nameEn;
       document.getElementById('world-info').classList.remove('hidden');
 
-      // Disable enter if no stages
       const btn = document.getElementById('btn-enter-world');
       if (w.stages.length === 0) {
         btn.textContent = 'Coming Soon';
         btn.disabled = true;
         btn.style.opacity = '0.4';
       } else {
-        btn.textContent = '入る';
+        btn.textContent = '\u5165\u308B';
         btn.disabled = false;
         btn.style.opacity = '1';
       }
@@ -383,30 +381,62 @@ function renderStages() {
   const list = document.getElementById('stage-list');
   list.innerHTML = '';
 
-  // Draw waveform header
   drawStageWave(w);
 
   let completedCount = 0;
-  let firstLocked = -1;
 
   w.stages.forEach((s, i) => {
     const prog = getStageProgress(w.id, s.id);
     if (prog.completed) completedCount++;
 
-    // A stage is unlocked if it's stage 0, or previous is completed
     const unlocked = i === 0 || getStageProgress(w.id, w.stages[i - 1].id).completed;
-    if (!unlocked && firstLocked === -1) firstLocked = i;
     const isCurrent = unlocked && !prog.completed;
 
     const card = document.createElement('div');
     card.className = 'stage-card' + (isCurrent ? ' current' : '') + (!unlocked ? ' locked' : '');
-    card.innerHTML = `
-      <div class="stage-left">
-        <span class="stage-label">${s.boss ? '👑 BOSS' : s.label}</span>
-        <span class="stage-sounds">${s.sounds}</span>
-      </div>
-      <span class="stage-stars">${prog.completed ? starStr(prog.stars) : !unlocked ? '🔒' : '—'}</span>
-    `;
+
+    // Build card content
+    const leftDiv = document.createElement('div');
+    leftDiv.className = 'stage-left';
+
+    // Show letter prominently for World 1 letter stages
+    if (s.letter) {
+      const letterEl = document.createElement('span');
+      letterEl.className = 'stage-letter';
+      letterEl.textContent = s.boss ? '\uD83D\uDC51' : s.letter;
+      leftDiv.appendChild(letterEl);
+    }
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'stage-label';
+    labelEl.textContent = s.boss ? 'BOSS' : s.label;
+    leftDiv.appendChild(labelEl);
+
+    const soundsEl = document.createElement('span');
+    soundsEl.className = 'stage-sounds';
+    soundsEl.textContent = s.subtitle || s.sounds;
+    leftDiv.appendChild(soundsEl);
+
+    card.appendChild(leftDiv);
+
+    // Right side: checkmark, stars, or lock
+    if (prog.completed) {
+      const check = document.createElement('span');
+      check.className = 'stage-check';
+      check.textContent = '\u2713';
+      card.appendChild(check);
+    } else if (!unlocked) {
+      const lock = document.createElement('span');
+      lock.className = 'stage-stars';
+      lock.textContent = '\uD83D\uDD12';
+      card.appendChild(lock);
+    } else {
+      const dash = document.createElement('span');
+      dash.className = 'stage-stars';
+      dash.textContent = '\u2014';
+      card.appendChild(dash);
+    }
+
     if (unlocked) {
       card.addEventListener('click', () => {
         selectedStageIdx = i;
@@ -422,7 +452,7 @@ function renderStages() {
 }
 
 function starStr(n) {
-  return '★'.repeat(n) + '☆'.repeat(3 - n);
+  return '\u2605'.repeat(n) + '\u2606'.repeat(3 - n);
 }
 
 let stageWaveRAF;
@@ -435,7 +465,7 @@ function drawStageWave(w) {
   let t = 0;
   function draw() {
     ctx.clearRect(0, 0, c.width, c.height);
-    ctx.strokeStyle = w.color + '55';
+    ctx.strokeStyle = 'rgba(34,197,94,0.2)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     const stages = w.stages.length || 1;
@@ -466,16 +496,54 @@ function startLesson(wIdx, sIdx) {
     correct: 0,
     total: s.questions.length,
     answered: false,
+    showingIntro: !!(s.letter && !s.boss), // Show intro for letter stages
   };
   showScreen('lesson');
   renderHearts();
   updateLessonProgress();
-  showQuestion();
+
+  if (lessonState.showingIntro) {
+    showLetterIntro(s);
+  } else {
+    showQuestion();
+  }
+}
+
+function showLetterIntro(stage) {
+  const area = document.getElementById('lesson-area');
+  area.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'letter-intro';
+
+  const bigLetter = document.createElement('div');
+  bigLetter.className = 'letter-big';
+  bigLetter.textContent = stage.letter + ' ' + stage.letter.toLowerCase();
+  card.appendChild(bigLetter);
+
+  const ipa = document.createElement('div');
+  ipa.className = 'letter-ipa';
+  ipa.textContent = LETTER_IPA[stage.letter] || '';
+  card.appendChild(ipa);
+
+  const readyBtn = document.createElement('button');
+  readyBtn.className = 'btn-primary ripple-btn';
+  readyBtn.textContent = 'Ready?';
+  readyBtn.addEventListener('click', () => {
+    lessonState.showingIntro = false;
+    showQuestion();
+  });
+  card.appendChild(readyBtn);
+
+  area.appendChild(card);
+
+  // Auto-play the letter sound
+  setTimeout(() => speak(stage.letter, 0.7), 400);
 }
 
 function renderHearts() {
   const el = document.getElementById('lesson-hearts');
-  el.textContent = '❤️'.repeat(lessonState.hearts) + '🖤'.repeat(HEARTS_MAX - lessonState.hearts);
+  el.textContent = '\u2764\uFE0F'.repeat(lessonState.hearts) + '\uD83D\uDDA4'.repeat(HEARTS_MAX - lessonState.hearts);
 }
 
 function updateLessonProgress() {
@@ -509,7 +577,7 @@ function showQuestion() {
 function renderListenChoose(area, q) {
   const inst = document.createElement('p');
   inst.className = 'exercise-instruction';
-  inst.textContent = '聞いて選べ – 音声を聞いて正しい単語を選ぼう';
+  inst.textContent = q.instruction || '\u805E\u3044\u3066\u9078\u3079 \u2013 \u97F3\u58F0\u3092\u805E\u3044\u3066\u6B63\u3057\u3044\u5358\u8A9E\u3092\u9078\u307C\u3046';
   area.appendChild(inst);
 
   const playBtn = createPlayCircle(() => speak(q.audioWord));
@@ -538,7 +606,6 @@ function renderListenChoose(area, q) {
   });
   area.appendChild(grid);
 
-  // Auto-play after a beat
   setTimeout(() => speak(q.audioWord), 400);
 }
 
@@ -546,7 +613,7 @@ function renderListenChoose(area, q) {
 function renderSameDifferent(area, q) {
   const inst = document.createElement('p');
   inst.className = 'exercise-instruction';
-  inst.textContent = '同じ？違う？ – 2つの音声を聞き比べよう';
+  inst.textContent = '\u540C\u3058\uFF1F\u9055\u3046\uFF1F \u2013 2\u3064\u306E\u97F3\u58F0\u3092\u805E\u304D\u6BD4\u3079\u3088\u3046';
   area.appendChild(inst);
 
   const row = document.createElement('div');
@@ -557,7 +624,7 @@ function renderSameDifferent(area, q) {
 
   const btns = document.createElement('div');
   btns.className = 'sd-buttons';
-  ['同じ', '違う'].forEach((label, i) => {
+  ['\u540C\u3058', '\u9055\u3046'].forEach((label, i) => {
     const btn = document.createElement('button');
     btn.className = 'sd-btn';
     btn.textContent = label;
@@ -584,7 +651,7 @@ function renderSameDifferent(area, q) {
 function renderFindSound(area, q) {
   const inst = document.createElement('p');
   inst.className = 'exercise-instruction';
-  inst.innerHTML = `この中の <strong style="color:var(--cyan);font-family:'JetBrains Mono',monospace">${q.targetSound}</strong> はどれ？`;
+  inst.innerHTML = '\u3053\u306E\u5358\u8A9E\u306E\u4E2D\u306E <strong style="color:#22c55e;font-family:\'JetBrains Mono\',monospace">' + q.targetSound + '</strong> \u306F\u3069\u308C\uFF1F';
   area.appendChild(inst);
 
   const wordRow = document.createElement('div');
@@ -606,7 +673,7 @@ function renderFindSound(area, q) {
 
   const submitBtn = document.createElement('button');
   submitBtn.className = 'btn-primary ripple-btn find-submit';
-  submitBtn.textContent = '決定';
+  submitBtn.textContent = '\u6C7A\u5B9A';
   submitBtn.addEventListener('click', () => {
     if (lessonState.answered) return;
     lessonState.answered = true;
@@ -623,7 +690,6 @@ function renderFindSound(area, q) {
   });
   area.appendChild(submitBtn);
 
-  // Speak the word
   setTimeout(() => speak(q.word), 400);
 }
 
@@ -631,7 +697,7 @@ function renderFindSound(area, q) {
 function renderSpeedRound(area, q) {
   const inst = document.createElement('p');
   inst.className = 'exercise-instruction';
-  inst.textContent = 'スピードラウンド – すばやく正解を選べ！';
+  inst.textContent = '\u30B9\u30D4\u30FC\u30C9\u30E9\u30A6\u30F3\u30C9 \u2013 \u3059\u3070\u3084\u304F\u6B63\u89E3\u3092\u9078\u3079\uFF01';
   area.appendChild(inst);
 
   const timerBar = document.createElement('div');
@@ -652,14 +718,13 @@ function renderSpeedRound(area, q) {
 
   let pairIdx = 0;
   let combo = 0;
-  let timeLeft = 100; // percentage
+  let timeLeft = 100;
   let timerInterval;
   let speedDone = false;
 
   function showPair() {
     if (pairIdx >= q.pairs.length || speedDone) {
       clearInterval(timerInterval);
-      // Count as correct if at least half right
       if (combo >= Math.ceil(q.pairs.length / 2)) onCorrect(grid);
       else onWrong(grid);
       return;
@@ -675,7 +740,7 @@ function renderSpeedRound(area, q) {
         if (i === pair.correctIndex) {
           btn.classList.add('correct');
           combo++;
-          comboEl.textContent = combo > 1 ? `${combo} COMBO!` : '';
+          comboEl.textContent = combo > 1 ? combo + ' COMBO!' : '';
           timeLeft = Math.min(100, timeLeft + 15);
         } else {
           btn.classList.add('wrong');
@@ -703,7 +768,6 @@ function renderSpeedRound(area, q) {
   }, 100);
 
   setTimeout(showPair, 300);
-  // Mark as answered from the start for speed round (handled internally)
   lessonState.answered = true;
 }
 
@@ -713,19 +777,19 @@ function onCorrect(el) {
   addXP(XP_PER_CORRECT);
   flashScreen('green', el);
   floatXP(el, '+' + XP_PER_CORRECT + ' XP');
-  waveformFlash('success');
-  setTimeout(nextQuestion, 1000);
+  // 800ms pause before next question
+  setTimeout(nextQuestion, 800);
 }
 
 function onWrong(el) {
   lessonState.hearts--;
   renderHearts();
   flashScreen('red', el);
-  waveformFlash('error');
   if (lessonState.hearts <= 0) {
     setTimeout(() => showScreen('fail'), 800);
   } else {
-    setTimeout(nextQuestion, 1200);
+    // 800ms pause before next question
+    setTimeout(nextQuestion, 800);
   }
 }
 
@@ -746,9 +810,8 @@ function finishLesson() {
   if (stars === 3) addXP(XP_BONUS_3STAR);
   saveState();
 
-  // Render clear screen
   document.getElementById('clear-stars').textContent = starStr(stars);
-  document.getElementById('clear-xp').textContent = `+${lessonState.correct * XP_PER_CORRECT + (stars === 3 ? XP_BONUS_3STAR : 0)} XP`;
+  document.getElementById('clear-xp').textContent = '+' + (lessonState.correct * XP_PER_CORRECT + (stars === 3 ? XP_BONUS_3STAR : 0)) + ' XP';
   showScreen('clear');
 }
 
@@ -781,21 +844,13 @@ function floatXP(refEl, text) {
   el.addEventListener('animationend', () => el.remove());
 }
 
-// Waveform flash state
-let waveFlashType = null, waveFlashTime = 0;
-function waveformFlash(type) {
-  waveFlashType = type;
-  waveFlashTime = 60; // frames
-}
-
 /* ═══════════════════════════════════════════════
    PLAY CIRCLE COMPONENT
    ═══════════════════════════════════════════════ */
 function createPlayCircle(onPlay) {
   const wrap = document.createElement('div');
   wrap.className = 'play-circle';
-  wrap.innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-  // Inline waveform canvas
+  wrap.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   const wc = document.createElement('canvas');
   wc.width = 100; wc.height = 100;
   wc.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:50%;';
@@ -807,12 +862,11 @@ function createPlayCircle(onPlay) {
     playing = true;
     wrap.classList.add('playing');
     onPlay();
-    // Animate ring
     let t = 0;
     const ctx = wc.getContext('2d');
     function anim() {
       ctx.clearRect(0, 0, 100, 100);
-      ctx.strokeStyle = `rgba(0,212,255,${0.5 + Math.sin(t * 0.3) * 0.3})`;
+      ctx.strokeStyle = 'rgba(34,197,94,' + (0.4 + Math.sin(t * 0.3) * 0.2) + ')';
       ctx.lineWidth = 2;
       ctx.beginPath();
       for (let a = 0; a < Math.PI * 2; a += 0.05) {
@@ -841,7 +895,6 @@ function speak(text, rate = 0.85) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
   u.rate = rate;
-  // Try to pick a good voice
   const voices = window.speechSynthesis.getVoices();
   const pref = voices.find(v => v.lang.startsWith('en') && v.name.includes('Samantha'))
              || voices.find(v => v.lang.startsWith('en-US'))
@@ -849,7 +902,6 @@ function speak(text, rate = 0.85) {
   if (pref) u.voice = pref;
   window.speechSynthesis.speak(u);
 }
-// Pre-load voices
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
