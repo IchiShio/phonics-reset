@@ -1,4 +1,4 @@
-const CACHE_NAME = 'phonics-reset-v1';
+const CACHE_NAME = 'phonics-reset-v2';
 const URLS_TO_CACHE = [
   './',
   './index.html',

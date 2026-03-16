@@ -464,7 +464,6 @@ body {
 
 .lesson-card-container {
   flex: 1;
-  display: flex;
   overflow: hidden;
   position: relative;
   max-width: 480px;
@@ -473,7 +472,11 @@ body {
 }
 
 .lesson-card {
-  min-width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   padding: 0 24px 24px;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
