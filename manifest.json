@@ -1,19 +1,18 @@
 {
-  "name": "Phonics Reset: Adult Edition",
+  "name": "PHONICS RESET",
   "short_name": "Phonics Reset",
-  "description": "大人のためのやり直し英語発音",
+  "description": "音が、見える。大人のためのフォニックス学習アプリ",
   "start_url": "/phonics-reset/",
+  "scope": "/phonics-reset/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
   "orientation": "portrait",
-  "lang": "ja",
+  "background_color": "#05050a",
+  "theme_color": "#05050a",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230a0a0f'/><circle cx='256' cy='256' r='160' fill='none' stroke='%236c5ce7' stroke-width='12' opacity='0.3'/><circle cx='256' cy='256' r='110' fill='none' stroke='%236c5ce7' stroke-width='12' opacity='0.5'/><circle cx='256' cy='256' r='60' fill='%236c5ce7'/><path d='M230 200 L230 312 L310 256 Z' fill='white'/></svg>",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2305050a'/><text x='50' y='62' text-anchor='middle' font-size='40' fill='%2300d4ff'>PR</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ]
 }

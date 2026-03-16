@@ -1,203 +1,94 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a0a0f">
-  <title>Phonics Reset - 大人のためのやり直し英語発音</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔊</text></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔊</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#05050a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PHONICS RESET</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ===== HOME SCREEN ===== -->
-  <div id="screen-home" class="screen active">
-    <div class="home-container">
-      <div class="home-logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 60 60" width="60" height="60">
-            <circle cx="30" cy="30" r="28" fill="none" stroke="#6c5ce7" stroke-width="2" opacity="0.3"/>
-            <circle cx="30" cy="30" r="20" fill="none" stroke="#6c5ce7" stroke-width="2" opacity="0.5"/>
-            <circle cx="30" cy="30" r="12" fill="#6c5ce7" opacity="0.8"/>
-            <path d="M24 22 L24 38 L40 30 Z" fill="#fff" opacity="0.9"/>
-          </svg>
-        </div>
-        <h1 class="home-title">Phonics Reset</h1>
-        <p class="home-subtitle">大人のためのやり直し英語発音</p>
-      </div>
+<!-- Full-screen background canvas -->
+<canvas id="bgCanvas"></canvas>
 
-      <div class="home-progress-ring-container">
-        <svg class="progress-ring" viewBox="0 0 160 160">
-          <circle class="progress-ring-bg" cx="80" cy="80" r="70" />
-          <circle class="progress-ring-fill" cx="80" cy="80" r="70" id="homeProgressRing" />
-        </svg>
-        <div class="progress-ring-text">
-          <span class="progress-ring-percent" id="homeProgressPercent">0%</span>
-          <span class="progress-ring-label">完了</span>
-        </div>
-      </div>
+<!-- ==================== TITLE SCREEN ==================== -->
+<div id="screen-title" class="screen active">
+  <div class="title-content">
+    <h1 class="glitch-text" data-text="PHONICS RESET">PHONICS RESET</h1>
+    <p class="subtitle">音が、見える。</p>
+    <canvas id="titleWave" width="360" height="80"></canvas>
+    <button id="btn-start" class="btn-primary ripple-btn">START</button>
+  </div>
+</div>
 
-      <div class="home-streak" id="homeStreak">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="#e17055">
-          <path d="M12 23c-3.6 0-8-3.1-8-8.5C4 9.3 12 1 12 1s8 8.3 8 13.5c0 5.4-4.4 8.5-8 8.5z"/>
-        </svg>
-        <span id="homeStreakCount">0</span>
-        <span>日連続</span>
-      </div>
+<!-- ==================== WORLD MAP ==================== -->
+<div id="screen-map" class="screen">
+  <div class="stats-bar">
+    <span id="stats-streak">🔥 0</span>
+    <span id="stats-level">Lv.1</span>
+    <span id="stats-xp">0 XP</span>
+  </div>
+  <canvas id="mapCanvas"></canvas>
+  <div id="world-info" class="world-info hidden">
+    <h2 id="world-info-name"></h2>
+    <p id="world-info-sub"></p>
+    <button id="btn-enter-world" class="btn-primary ripple-btn">入る</button>
+    <button id="btn-close-world" class="btn-ghost">戻る</button>
+  </div>
+</div>
 
-      <div class="home-actions">
-        <button class="btn-primary" id="btnTodayLesson" onclick="startTodayLesson()">
-          <span class="btn-icon">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </span>
-          今日のレッスン
-        </button>
-        <button class="btn-secondary" onclick="showScreen('soundmap')">
-          <span class="btn-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
-            </svg>
-          </span>
-          サウンドマップ
-        </button>
-        <button class="btn-tertiary" onclick="showScreen('progress')">
-          進捗を見る
-        </button>
-      </div>
+<!-- ==================== STAGE SELECT ==================== -->
+<div id="screen-stages" class="screen">
+  <div class="stats-bar">
+    <button id="btn-back-map" class="btn-ghost">← マップ</button>
+    <span id="stages-world-name"></span>
+  </div>
+  <canvas id="stageWaveCanvas"></canvas>
+  <div id="stage-list"></div>
+  <div id="stage-progress-bar"><div id="stage-progress-fill"></div></div>
+</div>
 
-      <div class="home-level" id="homeLevel">
-        <div class="level-bar-container">
-          <div class="level-label">
-            <span>Lv.<span id="homeLevelNum">1</span></span>
-            <span id="homeLevelXP">0 / 100 XP</span>
-          </div>
-          <div class="level-bar">
-            <div class="level-bar-fill" id="homeLevelBar"></div>
-          </div>
-        </div>
-      </div>
+<!-- ==================== LESSON ==================== -->
+<div id="screen-lesson" class="screen">
+  <div class="lesson-top">
+    <button id="btn-back-stages" class="btn-ghost">✕</button>
+    <div id="lesson-progress"><div id="lesson-progress-fill"></div></div>
+    <div id="lesson-hearts"></div>
+  </div>
+  <div id="lesson-area"></div>
+</div>
+
+<!-- ==================== STAGE CLEAR ==================== -->
+<div id="screen-clear" class="screen">
+  <div class="clear-content">
+    <h1 class="clear-title">CLEAR!</h1>
+    <div id="clear-stars"></div>
+    <p id="clear-xp"></p>
+    <div class="clear-buttons">
+      <button id="btn-next-stage" class="btn-primary ripple-btn">次へ</button>
+      <button id="btn-retry-stage" class="btn-ghost">もう一度</button>
     </div>
   </div>
+</div>
 
-  <!-- ===== SOUND MAP SCREEN ===== -->
-  <div id="screen-soundmap" class="screen">
-    <header class="screen-header">
-      <button class="btn-back" onclick="showScreen('home')">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </button>
-      <h2 class="screen-title">サウンドマップ</h2>
-      <div style="width:40px"></div>
-    </header>
-    <div class="soundmap-container" id="soundmapContainer">
-      <!-- Populated by JS -->
-    </div>
+<!-- ==================== STAGE FAIL ==================== -->
+<div id="screen-fail" class="screen">
+  <div class="clear-content">
+    <h1 class="fail-title">FAILED</h1>
+    <p class="fail-sub">ライフがなくなりました</p>
+    <button id="btn-retry-fail" class="btn-primary ripple-btn">再挑戦</button>
+    <button id="btn-quit-fail" class="btn-ghost">ステージ選択へ</button>
   </div>
+</div>
 
-  <!-- ===== LESSON SCREEN ===== -->
-  <div id="screen-lesson" class="screen">
-    <header class="screen-header">
-      <button class="btn-back" onclick="exitLesson()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </button>
-      <h2 class="screen-title" id="lessonTitle">/θ/</h2>
-      <div style="width:40px"></div>
-    </header>
-    <div class="lesson-dots" id="lessonDots">
-      <!-- Step dots -->
-    </div>
-    <div class="lesson-card-container" id="lessonCardContainer">
-      <!-- Lesson cards populated by JS -->
-    </div>
-    <div class="lesson-nav">
-      <button class="lesson-nav-btn" id="lessonPrev" onclick="lessonPrev()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-        </svg>
-      </button>
-      <button class="lesson-nav-btn lesson-nav-next" id="lessonNext" onclick="lessonNext()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-        </svg>
-        <span id="lessonNextLabel">次へ</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ===== PRACTICE SCREEN ===== -->
-  <div id="screen-practice" class="screen">
-    <header class="screen-header">
-      <button class="btn-back" onclick="exitPractice()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </button>
-      <h2 class="screen-title" id="practiceTitle">練習</h2>
-      <div class="practice-counter" id="practiceCounter">1 / 5</div>
-    </header>
-    <div class="practice-progress-bar">
-      <div class="practice-progress-fill" id="practiceProgressFill"></div>
-    </div>
-    <div class="practice-content" id="practiceContent">
-      <!-- Exercise content populated by JS -->
-    </div>
-  </div>
-
-  <!-- ===== RESULT SCREEN ===== -->
-  <div id="screen-result" class="screen">
-    <div class="result-container">
-      <div class="result-icon" id="resultIcon">
-        <svg viewBox="0 0 80 80" width="80" height="80">
-          <circle cx="40" cy="40" r="38" fill="none" stroke="#00b894" stroke-width="3"/>
-          <path d="M24 42 L34 52 L56 28" fill="none" stroke="#00b894" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h2 class="result-title" id="resultTitle">お疲れさまでした！</h2>
-      <div class="result-score" id="resultScore">
-        <span class="result-score-num">4</span>
-        <span class="result-score-sep">/</span>
-        <span class="result-score-total">5</span>
-      </div>
-      <div class="result-label">正解</div>
-      <div class="result-xp" id="resultXP">+20 XP</div>
-      <div class="result-streak" id="resultStreak"></div>
-      <div class="result-actions">
-        <button class="btn-primary" onclick="showScreen('home')">ホームに戻る</button>
-        <button class="btn-secondary" onclick="retryPractice()">もう一度練習</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== PROGRESS SCREEN ===== -->
-  <div id="screen-progress" class="screen">
-    <header class="screen-header">
-      <button class="btn-back" onclick="showScreen('home')">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </button>
-      <h2 class="screen-title">進捗</h2>
-      <div style="width:40px"></div>
-    </header>
-    <div class="progress-container" id="progressContainer">
-      <!-- Populated by JS -->
-    </div>
-  </div>
-
-  <!-- Toast notification -->
-  <div class="toast" id="toast"></div>
-
-  <script src="data/phonemes.js"></script>
-  <script src="app.js"></script>
+<script src="data/worlds.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
